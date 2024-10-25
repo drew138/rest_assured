@@ -15,6 +15,9 @@ public class LoginPage extends BasePage {
     @FindBy(xpath = "//button[@id='login']")
     WebElement buttonLogin;
 
+    @FindBy(xpath = "//div[@id='output']/div/p")
+    WebElement errorMessage;
+
     public LoginPage(WebDriver driver) {
         super(driver);
     }
@@ -28,7 +31,7 @@ public class LoginPage extends BasePage {
         wait.until(ExpectedConditions.elementToBeClickable(buttonLogin)).click();
     }
 
-//    public String getErrorMessage() {
-//        return wait.until(ExpectedConditions.visibilityOf(errorMessage)).getText();
-//    }
+    public String getErrorMessage() {
+        return wait.until(ExpectedConditions.visibilityOf(errorMessage)).getText();
+    }
 }

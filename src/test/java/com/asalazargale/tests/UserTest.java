@@ -41,10 +41,9 @@ public class UserTest extends BaseTest {
         profilePage.deleteAccount();
         profilePage.confirmDeleteAccount();
 
-//        loginPage.enterCredentials(userName, password);
-//        loginPage.clickLogin();
+        loginPage.enterCredentials(userName, password);
+        loginPage.clickLogin();
 
-        //assertThat(loginPage.getErrorMessage()).isEqualTo("Username and password do not match any user in this service");
-
+        assertThat(loginPage.getErrorMessage()).isEqualTo("Invalid username or password!");
     }
 }
