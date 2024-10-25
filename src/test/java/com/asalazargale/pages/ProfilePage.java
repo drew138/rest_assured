@@ -9,18 +9,18 @@ public class ProfilePage extends BasePage {
     @FindBy(xpath = "//button[@id='submit' and text()='Delete Account']")
     WebElement deleteAccountButton;
     @FindBy(xpath = "//button[@id='closeSmallModal-ok' and text()='OK']")
-    WebElement confirmDeletelButton;
+    WebElement confirmDeleteButton;
 
     public ProfilePage(WebDriver driver) {
         super(driver);
     }
 
-    public void deleteAccount() {
+    public void deleteUserAccount() {
         wait.until(ExpectedConditions.elementToBeClickable(deleteAccountButton)).click();
     }
 
-    public void confirmDeleteAccount() {
-        wait.until(ExpectedConditions.elementToBeClickable(confirmDeletelButton)).click();
+    public void confirmDeleteUserAccount() {
+        wait.until(ExpectedConditions.elementToBeClickable(confirmDeleteButton)).click();
         wait.until(ExpectedConditions.alertIsPresent()).accept();
     }
 }

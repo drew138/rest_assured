@@ -7,7 +7,7 @@ import io.restassured.response.Response;
 
 public class UserApi implements UserProvider {
     @Override
-    public Response createUser(String userName, String password) {
+    public Response createUserAccount(String userName, String password) {
         String requestBody = """
         {
             "userName": "%s",

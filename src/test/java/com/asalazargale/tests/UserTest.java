@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-
 public class UserTest extends BaseTest {
     private UserProvider userApi;
     private LoginPage loginPage;
@@ -26,24 +25,27 @@ public class UserTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Integration test for user CRUD operations")
-    public void userCrudTest() {
+    @DisplayName("Test for user create & delete workflow")
+    public void userCreationWorkflowTest() {
         // Arrange
         String userName = UserFactory.generateRandomUserName();
         String password = UserFactory.generateRandomPassword();
-        Response response = userApi.createUser(userName, password);
-        response.then().statusCode(201);
+
+        // Act
+        Response response = userApi.createUserAccount(userName, password);
+        response.then().statusCode(201).onFailMessage("User account was not created successfully.");
 
         loginPage.open();
         loginPage.enterCredentials(userName, password);
         loginPage.clickLogin();
 
-        profilePage.deleteAccount();
-        profilePage.confirmDeleteAccount();
+        profilePage.deleteUserAccount();
+        profilePage.confirmDeleteUserAccount();
 
         loginPage.enterCredentials(userName, password);
         loginPage.clickLogin();
 
-        assertThat(loginPage.getErrorMessage()).isEqualTo("Invalid username or password!");
+        // Assert
+        assertThat(loginPage.getOutputMessage()).isEqualTo("Invalid username or password!");
     }
 }
