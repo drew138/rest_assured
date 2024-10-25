@@ -3,6 +3,7 @@ package com.asalazargale.tests;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.asalazargale.pages.LoginPage;
+import com.asalazargale.pages.ProfilePage;
 import com.asalazargale.restapi.UserApi;
 import com.asalazargale.restapi.UserProvider;
 import com.asalazargale.util.UserFactory;
@@ -14,15 +15,14 @@ import org.junit.jupiter.api.Test;
 
 public class UserTest extends BaseTest {
     private UserProvider userApi;
-
     private LoginPage loginPage;
-
+    private ProfilePage profilePage;
 
     @BeforeEach
-    public void prepareTest() {
+    public void initializePages() {
         this.userApi = new UserApi();
         this.loginPage = new LoginPage(driver);
-        //this.profilePage = new ProfilePage(driver);
+        this.profilePage = new ProfilePage(driver);
     }
 
     @Test
@@ -38,9 +38,9 @@ public class UserTest extends BaseTest {
         loginPage.enterCredentials(userName, password);
         loginPage.clickLogin();
 
-//        profilePage.deleteAccount();
-//        profilePage.confirmDeleteAccount();
-//
+        profilePage.deleteAccount();
+        profilePage.confirmDeleteAccount();
+
 //        loginPage.enterCredentials(userName, password);
 //        loginPage.clickLogin();
 
