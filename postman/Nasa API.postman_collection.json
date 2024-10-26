@@ -1,0 +1,405 @@
+{
+	"info": {
+		"_postman_id": "f233a035-942c-468c-ad09-9e23e839d98a",
+		"name": "Nasa API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11463484"
+	},
+	"item": [
+		{
+			"name": "near earth objects web service",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should succeed to list near earth objects', function() {",
+							"    // Arrange",
+							"    const api_key = pm.variables.get('api_key');",
+							"    const request = pm.request.clone();",
+							"    const queryParams = [",
+							"        { key: 'api_key', value: api_key },",
+							"    ];",
+							"    request.url.query.clear();",
+							"    request.url.addQueryParams(queryParams);",
+							"",
+							"    // Act",
+							"    pm.sendRequest(request, function (err, response) {",
+							"        const responseBody = response.json();",
+							"",
+							"        for (const [_, value] of Object.entries(responseBody.near_earth_objects)) {",
+							"            // Assert",
+							"            pm.expect(value).to.be.an('array');",
+							"        }",
+							"        ",
+							"        pm.expect(response.code).to.be.oneOf([200]);",
+							"",
+							"    });",
+							"});",
+							"",
+							"pm.test('should fail when not authenticated', function() {",
+							"    // Arrange",
+							"    const request = pm.request.clone();",
+							"    const expectedError = {",
+							"        \"code\": \"API_KEY_MISSING\",",
+							"        \"message\": \"No api_key was supplied. Get one at https://api.nasa.gov:443\"",
+							"    };",
+							"",
+							"    request.url.query.clear();",
+							"",
+							"    // Act",
+							"    pm.sendRequest(request, function (err, response) {",
+							"        const responseBody = response.json();",
+							"",
+							"        // Assert",
+							"        pm.expect(responseBody.error).to.eql(expectedError);",
+							"        pm.expect(response.code).to.be.oneOf([403]);",
+							"",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/neo/rest/v1/feed?start_date=2024-10-1&end_date=2024-10-5&api_key={{api_key}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"neo",
+						"rest",
+						"v1",
+						"feed"
+					],
+					"query": [
+						{
+							"key": "start_date",
+							"value": "2024-10-1"
+						},
+						{
+							"key": "end_date",
+							"value": "2024-10-5"
+						},
+						{
+							"key": "api_key",
+							"value": "{{api_key}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "astronomy picture of the day",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should retrieve a single image', function() {",
+							"    // Arrange",
+							"    const api_key = pm.variables.get('api_key');",
+							"    const date = '2024-10-15';",
+							"    const request = pm.request.clone();",
+							"    ",
+							"    const queryParams = [",
+							"        { key: 'date', value: date },",
+							"        { key: 'api_key', value: api_key },",
+							"    ];",
+							"    request.url.query.clear();",
+							"    request.url.addQueryParams(queryParams);",
+							"",
+							"    // Act",
+							"    pm.sendRequest(request, function (err, response) {",
+							"        const responseBody = response.json();",
+							"",
+							"        const requiredKeys = [",
+							"            'copyright', ",
+							"            'date', ",
+							"            'explanation', ",
+							"            'media_type', ",
+							"            'service_version', ",
+							"            'title', ",
+							"            'url',",
+							"        ];",
+							"        // Assert",
+							"        requiredKeys.forEach(function(key) {",
+							"            pm.expect(responseBody).to.have.property(key);",
+							"        });",
+							"        pm.expect(response.code).to.be.oneOf([200]);",
+							"",
+							"    });",
+							"})",
+							"",
+							"pm.test('should list images in a date range', function() {",
+							"    // Arrange",
+							"    const api_key = pm.variables.get('api_key');",
+							"    const start_date = '2024-10-15';",
+							"    const end_date = '2024-10-20'",
+							"    const request = pm.request.clone();",
+							"    ",
+							"    const queryParams = [",
+							"        { key: 'api_key', value: api_key },",
+							"        { key: 'start_date', value: start_date },",
+							"        { key: 'end_date', value: end_date },",
+							"    ];",
+							"    request.url.query.clear();",
+							"    request.url.addQueryParams(queryParams);",
+							"",
+							"    // Act",
+							"    pm.sendRequest(request, function (err, response) {",
+							"",
+							"        const responseBody = response.json();",
+							"        const requiredKeys = [",
+							"            'copyright', ",
+							"            'date', ",
+							"            'explanation', ",
+							"            'media_type', ",
+							"            'service_version', ",
+							"            'title', ",
+							"            'url',",
+							"        ];",
+							"",
+							"        // Assert",
+							"        responseBody.forEach(image => {",
+							"            requiredKeys.forEach(function(key) {",
+							"                pm.expect(image).to.have.property(key);",
+							"            });",
+							"        })",
+							"        pm.expect(response.code).to.be.oneOf([200]);",
+							"",
+							"    });",
+							"})",
+							"",
+							"pm.test('should fail when data and start_date query params exist', function() {",
+							"    // Arrange",
+							"    const api_key = pm.variables.get('api_key');",
+							"    const start_date = '2024-10-15';",
+							"    const date = '2024-10-20';",
+							"    const request = pm.request.clone();",
+							"    const expectedMsg = \"Bad Request: invalid field combination passed. Allowed request fields for apod method are 'concept_tags', 'date', 'hd', 'count', 'start_date', 'end_date', 'thumbs'\";",
+							"    ",
+							"    const queryParams = [",
+							"        { key: 'api_key', value: api_key },",
+							"        { key: 'start_date', value: start_date },",
+							"        { key: 'date', value: date },",
+							"    ];",
+							"    request.url.query.clear();",
+							"    request.url.addQueryParams(queryParams);",
+							"",
+							"    // Act",
+							"    pm.sendRequest(request, function (err, response) {",
+							"        const responseBody = response.json();",
+							"",
+							"        // Assert",
+							"        pm.expect(responseBody.msg).to.eql(expectedMsg);",
+							"        pm.expect(response.code).to.be.oneOf([400]);",
+							"",
+							"    });",
+							"})",
+							"",
+							"pm.test('should fail when not authenticated', function() {",
+							"    // Arrange",
+							"    const date = '2024-10-20';",
+							"    const request = pm.request.clone();",
+							"    const expectedError = {",
+							"        \"code\": \"API_KEY_MISSING\",",
+							"        \"message\": \"No api_key was supplied. Get one at https://api.nasa.gov:443\"",
+							"    };",
+							"    ",
+							"    const queryParams = [",
+							"        { key: 'date', value: date },",
+							"    ];",
+							"    request.url.query.clear();",
+							"    request.url.addQueryParams(queryParams);",
+							"",
+							"    // Act",
+							"    pm.sendRequest(request, function (err, response) {",
+							"        const responseBody = response.json();",
+							"",
+							"        // Assert",
+							"        pm.expect(responseBody.error).to.eql(expectedError);",
+							"        pm.expect(response.code).to.be.oneOf([403]);",
+							"",
+							"    });",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/planetary/apod?date=2024-10-15",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"planetary",
+						"apod"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "{{api_key}}",
+							"disabled": true
+						},
+						{
+							"key": "date",
+							"value": "2024-10-15"
+						},
+						{
+							"key": "start_date",
+							"value": "2024-10-1",
+							"disabled": true
+						},
+						{
+							"key": "end_date",
+							"value": "2024-10-20",
+							"disabled": true
+						},
+						{
+							"key": "count",
+							"value": "10",
+							"disabled": true
+						},
+						{
+							"key": "thumbs",
+							"value": "false",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "mars rover photos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should return a list of images with sol 1000', function() {",
+							"    // Arrange",
+							"    const api_key = pm.variables.get('api_key');",
+							"    const sol = 1000;",
+							"    const request = pm.request.clone();",
+							"    ",
+							"    const queryParams = [",
+							"        { key: 'api_key', value: api_key },",
+							"        { key: 'sol', value: sol },",
+							"    ];",
+							"    request.url.query.clear();",
+							"    request.url.addQueryParams(queryParams);",
+							"",
+							"    // Act",
+							"    pm.sendRequest(request, function (err, response) {",
+							"        const responseBody = response.json();",
+							"",
+							"        // Assert",
+							"        responseBody.photos.forEach(photo => {",
+							"            pm.expect(photo.sol).to.eql(sol);",
+							"        });",
+							"        pm.expect(response.code).to.be.oneOf([200]);",
+							"    });",
+							"});",
+							"",
+							"pm.test('should return an empty list when no sol query param is supplied', function() {",
+							"    // Arrange",
+							"    const api_key = pm.variables.get('api_key');",
+							"    const request = pm.request.clone();",
+							"    const expectedResponse = { photos: [] };",
+							"    ",
+							"    const queryParams = [",
+							"        { key: 'api_key', value: api_key },",
+							"    ];",
+							"    request.url.query.clear();",
+							"    request.url.addQueryParams(queryParams);",
+							"",
+							"    // Act",
+							"    pm.sendRequest(request, function (err, response) {",
+							"        const responseBody = response.json();",
+							"",
+							"        // Assert",
+							"        pm.expect(responseBody).to.eql(expectedResponse);",
+							"        pm.expect(response.code).to.be.oneOf([200]);",
+							"    });",
+							"});",
+							"",
+							"pm.test('should fail when not authenticated', function() {",
+							"    // Arrange",
+							"    const request = pm.request.clone();",
+							"    const expectedError = {",
+							"        \"code\": \"API_KEY_MISSING\",",
+							"        \"message\": \"No api_key was supplied. Get one at https://api.nasa.gov:443\"",
+							"    };",
+							"",
+							"    request.url.query.clear();",
+							"",
+							"    // Act",
+							"    pm.sendRequest(request, function (err, response) {",
+							"        const responseBody = response.json();",
+							"",
+							"        // Assert",
+							"        pm.expect(responseBody.error).to.eql(expectedError);",
+							"        pm.expect(response.code).to.be.oneOf([403]);",
+							"",
+							"    });",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key={{api_key}}&page=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"mars-photos",
+						"api",
+						"v1",
+						"rovers",
+						"curiosity",
+						"photos"
+					],
+					"query": [
+						{
+							"key": "sol",
+							"value": "1000"
+						},
+						{
+							"key": "api_key",
+							"value": "{{api_key}}"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
